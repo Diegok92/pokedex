@@ -1,8 +1,7 @@
 const apiUrl = "https://pokeapi.co/api/v2/pokemon/";
-let pokemonIndex = 1;
 
-function fetchPokemonData(index) {
-  fetch(apiUrl + index)
+function fetchPokemonData(nameOrId) {
+  fetch(apiUrl + nameOrId.toLowerCase())
     .then((response) => response.json())
     .then((data) => {
       displayPokemonData(data);
@@ -11,25 +10,40 @@ function fetchPokemonData(index) {
 }
 
 function displayPokemonData(pokemon) {
-  document.getElementById("pokemon-image").src = pokemon.sprites.front_default;
-  document.getElementById("pokemon-name").textContent = pokemon.name;
-  document.getElementById("pokemon-type").textContent =
-    "Tipo: " + pokemon.types.map((type) => type.type.name).join(", ");
-  document.getElementById("pokemon-height").textContent =
-    "Altura: " + pokemon.height;
-  document.getElementById("pokemon-weight").textContent =
-    "Peso: " + pokemon.weight;
-}
+  if (pokemon) {
+    document.getElementById("pokemon-image").src =
+      pokemon.sprites.front_default;
+    document.getElementById("pokemon-name").textContent = pokemon.name;
+    document.getElementById("pokemon-number").textContent = pokemon.id + " #";
 
+    document.getElementById("pokemon-type").textContent =
+      "Tipo: " + pokemon.types.map((type) => type.type.name).join(", ");
+    document.getElementById("pokemon-height").textContent =
+      "Altura: " + pokemon.height * 10 + " cm";
+    document.getElementById("pokemon-weight").textContent =
+      "Peso: " + pokemon.weight / 10 + " kg";
+  } else {
+    document.getElementById("pokemon-name").textContent = "";
+    document.getElementById("pokemon-type").textContent = "";
+    document.getElementById("pokemon-height").textContent = "";
+    document.getElementById("pokemon-weight").textContent = "";
+    let pokemonIndex = 1;
+  }
+}
+/*
 document.getElementById("prev-button").addEventListener("click", () => {
-  pokemonIndex = Math.max(1, pokemonIndex - 1);
-  fetchPokemonData(pokemonIndex);
+  pokemon.id = Math.max(1, pokemon.id - 1);
+  fetchPokemonData(pokemon.id);
 });
 
 document.getElementById("next-button").addEventListener("click", () => {
-  pokemonIndex++;
-  fetchPokemonData(pokemonIndex);
+  pokemon.id++;
+  fetchPokemonData(pokemon.id);
 });
 
-// Cargar datos del primer Pokémon al cargar la página
 fetchPokemonData(pokemonIndex);
+*/
+document.getElementById("search-button").addEventListener("click", () => {
+  const pokemonInput = document.getElementById("pokemon-input").value;
+  fetchPokemonData(pokemonInput);
+});

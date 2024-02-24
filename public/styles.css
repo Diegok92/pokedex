@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: red;
   margin: 0;
   padding: 0;
   display: flex;
@@ -15,8 +15,8 @@ body {
 }
 
 .pokedex-container {
-  background-color: #fff;
-  border: 2px solid #000;
+  background-color: rgb(229, 233, 236);
+  border: 10px solid #000;
   border-radius: 10px;
   padding: 20px;
   display: flex;
@@ -30,6 +30,10 @@ body {
 
 .navigation-buttons {
   margin-top: 20px;
+}
+
+#pokemon-input {
+  width: 80%;
 }
 
 button {

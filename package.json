@@ -1,16 +1,20 @@
 {
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "google-translate-api": "^2.3.0"
   },
   "name": "pokedex",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -e js index.js"
   },
   "keywords": [],
   "author": "Diego K",
   "license": "ISC",
-  "description": "Pokedex alimentado por pokeapi.co"
+  "description": "Pokedex alimentado por pokeapi.co",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }
