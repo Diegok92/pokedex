@@ -5,6 +5,8 @@ function fetchPokemonData(nameOrId) {
 	fetch(apiUrl + nameOrId.toLowerCase())
 		.then((response) => response.json())
 		.then((data) => {
+			document.getElementById("welcome-message").classList.add("hidden");
+			document.getElementById("pokemon-image").classList.remove("hidden");
 			displayPokemonData(data);
 			fetchPokemonSpeciesData(data.id);
 		})
@@ -16,6 +18,11 @@ function fetchPokemonSpeciesData(id) {
 		.then((response) => response.json())
 		.then((data) => {
 			fetchEvolutionChain(data.evolution_chain.url);
+			document.getElementById(
+				"region"
+			).textContent = `Región: ${data.generation.name
+				.replace("generation-", "")
+				.toUpperCase()}`;
 		})
 		.catch((error) =>
 			console.log("Error fetching Pokemon species data:", error)
@@ -31,13 +38,47 @@ function fetchEvolutionChain(url) {
 		.catch((error) => console.log("Error fetching evolution chain:", error));
 }
 
+function fetchStrengthsAndWeaknesses(types) {
+	const typeUrl = "https://pokeapi.co/api/v2/type/";
+	const strengths = [];
+	const weaknesses = [];
+
+	Promise.all(
+		types.map((type) =>
+			fetch(typeUrl + type.type.name)
+				.then((response) => response.json())
+				.then((typeData) => {
+					strengths.push(
+						...typeData.damage_relations.double_damage_to.map((t) => t.name)
+					);
+					weaknesses.push(
+						...typeData.damage_relations.double_damage_from.map((t) => t.name)
+					);
+				})
+		)
+	).then(() => {
+		document.getElementById("strengths").textContent = `Fuertes contra: ${[
+			...new Set(strengths),
+		].join(", ")}`;
+		document.getElementById("weaknesses").textContent = `Débiles contra: ${[
+			...new Set(weaknesses),
+		].join(", ")}`;
+	});
+}
+
 function displayPokemonData(pokemon) {
 	if (pokemon) {
 		const pokemonImage = document.getElementById("pokemon-image");
 		pokemonImage.classList.remove("fade-in");
-		void pokemonImage.offsetWidth; // Reinicia la animación
+		void pokemonImage.offsetWidth; // Reinicia la animacion
 		pokemonImage.src = pokemon.sprites.front_default;
 		pokemonImage.classList.add("fade-in");
+
+		pokemonImage.onclick = () => {
+			new Audio(
+				`https://play.pokemonshowdown.com/audio/cries/${pokemon.name}.mp3`
+			).play();
+		};
 
 		document.getElementById("pokemon-name").textContent = pokemon.name;
 		document.getElementById("pokemon-number").textContent =
@@ -50,12 +91,14 @@ function displayPokemonData(pokemon) {
 			"Peso: " + pokemon.weight / 10 + " kg";
 
 		document.getElementById("home-button").classList.remove("hidden");
+
+		fetchStrengthsAndWeaknesses(pokemon.types);
 	}
 }
 
 function displayEvolutions(chain) {
 	const evolutionContainer = document.getElementById("evolution-container");
-	evolutionContainer.innerHTML = "";
+	evolutionContainer.innerHTML = "<h3>Evoluciones:</h3>";
 
 	let current = chain;
 
@@ -66,7 +109,10 @@ function displayEvolutions(chain) {
 				const evolutionImage = document.createElement("img");
 				evolutionImage.src = data.sprites.front_default;
 				evolutionImage.className = "evolution-image";
+				const evolutionInfo = document.createElement("p");
+				evolutionInfo.textContent = `${data.name} (#${data.id})`;
 				evolutionContainer.appendChild(evolutionImage);
+				evolutionContainer.appendChild(evolutionInfo);
 			});
 
 		current = current.evolves_to[0];
@@ -85,13 +131,16 @@ document.getElementById("pokemon-input").addEventListener("keypress", (e) => {
 });
 
 document.getElementById("home-button").addEventListener("click", () => {
-	document.getElementById("pokemon-image").src =
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/404px-International_Pok%C3%A9mon_logo.svg.png";
+	document.getElementById("pokemon-image").classList.add("hidden");
+	document.getElementById("welcome-message").classList.remove("hidden");
 	document.getElementById("pokemon-name").textContent = "";
 	document.getElementById("pokemon-number").textContent = "";
 	document.getElementById("pokemon-type").textContent = "";
 	document.getElementById("pokemon-height").textContent = "";
 	document.getElementById("pokemon-weight").textContent = "";
 	document.getElementById("evolution-container").innerHTML = "";
+	document.getElementById("strengths").textContent = "";
+	document.getElementById("weaknesses").textContent = "";
+	document.getElementById("region").textContent = "";
 	document.getElementById("home-button").classList.add("hidden");
 });
