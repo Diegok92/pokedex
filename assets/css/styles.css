@@ -1,3 +1,4 @@
+
 body {
   font-family: "Press Start 2P", Arial, sans-serif;
   background-color: #f2f2f2;
@@ -7,6 +8,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background-color: darkred;
+  
 }
 
 .pokedex {
@@ -48,10 +51,6 @@ body {
   transition: transform 0.5s ease-in-out;
 }
 
-.pokemon-img.hidden {
-  display: none;
-}
-
 .pokemon-img:hover {
   transform: rotate(10deg);
 }
@@ -83,12 +82,40 @@ button:hover {
   background-color: #ff7f50;
 }
 
-.evolution-container {
+.info-columns {
+  display: flex;
+  justify-content: space-between;
   margin-top: 20px;
+}
+
+.evolution-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.evolution-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .evolution-image {
   width: 60px;
   height: auto;
-  margin: 5px;
+}
+
+.strengths-weaknesses {
+  text-align: left;
+}
+
+.strengths-weaknesses p {
+  margin-bottom: 5px;
+}
+
+.strengths-weaknesses ul {
+  padding-left: 20px;
+  margin-top: 10px;
+  list-style-type: none;
 }

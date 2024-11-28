@@ -5,8 +5,6 @@ function fetchPokemonData(nameOrId) {
 	fetch(apiUrl + nameOrId.toLowerCase())
 		.then((response) => response.json())
 		.then((data) => {
-			document.getElementById("welcome-message").classList.add("hidden");
-			document.getElementById("pokemon-image").classList.remove("hidden");
 			displayPokemonData(data);
 			fetchPokemonSpeciesData(data.id);
 		})
@@ -20,7 +18,7 @@ function fetchPokemonSpeciesData(id) {
 			fetchEvolutionChain(data.evolution_chain.url);
 			document.getElementById(
 				"region"
-			).textContent = `Región: ${data.generation.name
+			).textContent = `Generation: ${data.generation.name
 				.replace("generation-", "")
 				.toUpperCase()}`;
 		})
@@ -57,12 +55,15 @@ function fetchStrengthsAndWeaknesses(types) {
 				})
 		)
 	).then(() => {
-		document.getElementById("strengths").textContent = `Fuertes contra: ${[
-			...new Set(strengths),
-		].join(", ")}`;
-		document.getElementById("weaknesses").textContent = `Débiles contra: ${[
-			...new Set(weaknesses),
-		].join(", ")}`;
+		const strengthsList = strengths.map((t) => `<li>${t}</li>`).join("");
+		const weaknessesList = weaknesses.map((t) => `<li>${t}</li>`).join("");
+
+		document.getElementById(
+			"strengths"
+		).innerHTML = `Strong vs: <ul>${strengthsList}</ul>`;
+		document.getElementById(
+			"weaknesses"
+		).innerHTML = `Weak vs: <ul>${weaknessesList}</ul>`;
 	});
 }
 
@@ -70,7 +71,7 @@ function displayPokemonData(pokemon) {
 	if (pokemon) {
 		const pokemonImage = document.getElementById("pokemon-image");
 		pokemonImage.classList.remove("fade-in");
-		void pokemonImage.offsetWidth; // Reinicia la animacion
+		void pokemonImage.offsetWidth; // Reinicio la animacion
 		pokemonImage.src = pokemon.sprites.front_default;
 		pokemonImage.classList.add("fade-in");
 
@@ -81,14 +82,19 @@ function displayPokemonData(pokemon) {
 		};
 
 		document.getElementById("pokemon-name").textContent = pokemon.name;
-		document.getElementById("pokemon-number").textContent =
-			"Número: #" + pokemon.id;
+		document.getElementById("pokemon-number").textContent = "#" + pokemon.id;
 		document.getElementById("pokemon-type").textContent =
-			"Tipo: " + pokemon.types.map((type) => type.type.name).join(", ");
+			"Type: " + pokemon.types.map((type) => type.type.name).join(", ");
 		document.getElementById("pokemon-height").textContent =
-			"Altura: " + pokemon.height * 10 + " cm";
+			"Height: " + pokemon.height * 10 + " cm";
 		document.getElementById("pokemon-weight").textContent =
-			"Peso: " + pokemon.weight / 10 + " kg";
+			"weight: " + pokemon.weight / 10 + " kg";
+
+		// Oculto el mensaje de bienvenida despues de buscar un Pokemon
+		const welcomeMessage = document.getElementById("welcome-message");
+		if (welcomeMessage) {
+			welcomeMessage.style.display = "none";
+		}
 
 		document.getElementById("home-button").classList.remove("hidden");
 
@@ -98,7 +104,7 @@ function displayPokemonData(pokemon) {
 
 function displayEvolutions(chain) {
 	const evolutionContainer = document.getElementById("evolution-container");
-	evolutionContainer.innerHTML = "<h3>Evoluciones:</h3>";
+	evolutionContainer.innerHTML = "<h3>Evol. Order:</h3>";
 
 	let current = chain;
 
@@ -106,13 +112,20 @@ function displayEvolutions(chain) {
 		fetch(apiUrl + current.species.name)
 			.then((response) => response.json())
 			.then((data) => {
+				const evolutionItem = document.createElement("div");
+				evolutionItem.className = "evolution-item";
+
 				const evolutionImage = document.createElement("img");
 				evolutionImage.src = data.sprites.front_default;
 				evolutionImage.className = "evolution-image";
+
 				const evolutionInfo = document.createElement("p");
 				evolutionInfo.textContent = `${data.name} (#${data.id})`;
-				evolutionContainer.appendChild(evolutionImage);
-				evolutionContainer.appendChild(evolutionInfo);
+
+				evolutionItem.appendChild(evolutionInfo);
+				evolutionItem.appendChild(evolutionImage);
+
+				evolutionContainer.appendChild(evolutionItem);
 			});
 
 		current = current.evolves_to[0];
@@ -131,8 +144,7 @@ document.getElementById("pokemon-input").addEventListener("keypress", (e) => {
 });
 
 document.getElementById("home-button").addEventListener("click", () => {
-	document.getElementById("pokemon-image").classList.add("hidden");
-	document.getElementById("welcome-message").classList.remove("hidden");
+	document.getElementById("pokemon-image").src = "assets/img/pokedex.png";
 	document.getElementById("pokemon-name").textContent = "";
 	document.getElementById("pokemon-number").textContent = "";
 	document.getElementById("pokemon-type").textContent = "";
@@ -142,5 +154,12 @@ document.getElementById("home-button").addEventListener("click", () => {
 	document.getElementById("strengths").textContent = "";
 	document.getElementById("weaknesses").textContent = "";
 	document.getElementById("region").textContent = "";
+
+	// Muestro de nuevo el mensaje de bienvenida
+	const welcomeMessage = document.getElementById("welcome-message");
+	if (welcomeMessage) {
+		welcomeMessage.style.display = "block";
+	}
+
 	document.getElementById("home-button").classList.add("hidden");
 });

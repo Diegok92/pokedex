@@ -25,16 +25,27 @@
 			</div>
 			<div class="screen">
 				<div class="pokemon-info">
-					<p id="welcome-message">Bienvenido, ya puedes comenzar la búsqueda</p>
-					<img id="pokemon-image" class="pokemon-img hidden" alt="Pokemon" />
+					<p id="welcome-message">
+						Bienvenido/a, ya puedes comenzar la búsqueda
+					</p>
+					<img
+						id="pokemon-image"
+						class="pokemon-img"
+						src="assets/img/pokedex.png"
+						alt="Pokemon"
+					/>
 					<h2 id="pokemon-name"></h2>
 					<p id="pokemon-number"></p>
 					<p id="pokemon-type"></p>
 					<p id="pokemon-height"></p>
 					<p id="pokemon-weight"></p>
-					<div class="evolution-container" id="evolution-container"></div>
-					<p id="strengths"></p>
-					<p id="weaknesses"></p>
+					<div class="info-columns">
+						<div class="evolution-container" id="evolution-container"></div>
+						<div class="strengths-weaknesses" id="strengths-weaknesses">
+							<p id="strengths"></p>
+							<p id="weaknesses"></p>
+						</div>
+					</div>
 					<p id="region"></p>
 				</div>
 			</div>
@@ -42,7 +53,7 @@
 				<input
 					type="text"
 					id="pokemon-input"
-					placeholder="Nombre o número del Pokémon"
+					placeholder="Nombre o # del Pokémon"
 				/>
 				<button id="search-button"><i class="fas fa-search"></i> Buscar</button>
 				<button id="home-button" class="hidden">
