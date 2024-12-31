@@ -104,32 +104,50 @@ function displayPokemonData(pokemon) {
 
 function displayEvolutions(chain) {
 	const evolutionContainer = document.getElementById("evolution-container");
-	evolutionContainer.innerHTML = "<h3>Evol. Order:</h3>";
+	evolutionContainer.innerHTML = "<h3>Discovery Order:</h3>";
 
+	let evolutions = [];
 	let current = chain;
 
+	// Recolectar todas las evoluciones en un array
 	while (current) {
-		fetch(apiUrl + current.species.name)
-			.then((response) => response.json())
-			.then((data) => {
-				const evolutionItem = document.createElement("div");
-				evolutionItem.className = "evolution-item";
-
-				const evolutionImage = document.createElement("img");
-				evolutionImage.src = data.sprites.front_default;
-				evolutionImage.className = "evolution-image";
-
-				const evolutionInfo = document.createElement("p");
-				evolutionInfo.textContent = `${data.name} (#${data.id})`;
-
-				evolutionItem.appendChild(evolutionInfo);
-				evolutionItem.appendChild(evolutionImage);
-
-				evolutionContainer.appendChild(evolutionItem);
-			});
-
+		evolutions.push(current.species.name);
 		current = current.evolves_to[0];
 	}
+
+	// Obtener los datos de cada evolución y ordenarlos por ID
+	Promise.all(
+		evolutions.map((name) =>
+			fetch(apiUrl + name)
+				.then((response) => response.json())
+				.then((data) => ({
+					id: data.id,
+					name: data.name,
+					image: data.sprites.front_default,
+				}))
+		)
+	).then((evolutionsData) => {
+		// Ordenar las evoluciones por ID
+		evolutionsData.sort((a, b) => a.id - b.id);
+
+		// Renderizar las evoluciones ordenadas
+		evolutionsData.forEach((evolution) => {
+			const evolutionItem = document.createElement("div");
+			evolutionItem.className = "evolution-item";
+
+			const evolutionImage = document.createElement("img");
+			evolutionImage.src = evolution.image;
+			evolutionImage.className = "evolution-image";
+
+			const evolutionInfo = document.createElement("p");
+			evolutionInfo.textContent = `${evolution.name} (#${evolution.id})`;
+
+			evolutionItem.appendChild(evolutionInfo);
+			evolutionItem.appendChild(evolutionImage);
+
+			evolutionContainer.appendChild(evolutionItem);
+		});
+	});
 }
 
 document.getElementById("search-button").addEventListener("click", () => {
